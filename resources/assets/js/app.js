@@ -15,7 +15,7 @@ const app = new Vue({
 		notTraveled : [],
 		connections : [],
 		displayPoint : false,
-		pointsToCreate : 10
+		pointsToCreate : 150
 	},
 	mounted(){
 
@@ -43,13 +43,16 @@ const app = new Vue({
 
 		var current = 0;
 
-		while ( current < this.points.length){
-			let pointA = this.points[current]
+		while (  this.pointsWithoutEnoughConnections.length ){
+			
+			let points = this.shuffle(this.pointsWithoutEnoughConnections);
+
+			let pointA = points[0]
 
 			let connectionCount = Math.floor(Math.random() * (this.points.length - current))
 
 			if (connectionCount > 5) connectionCount = 5;
-			if (connectionCount == 1) connectionCount = 2;
+			if (connectionCount == 2) connectionCount = 3;
 
 			var pointsToConnect = this.shuffle(this.points).slice(0, connectionCount);
 			pointsToConnect.forEach(function(pointB){
@@ -67,6 +70,11 @@ const app = new Vue({
 		},
 		endingPoint(){
 			return this.points[this.points.length - 1];
+		},
+		pointsWithoutEnoughConnections(){
+			return this.points.filter(function(point){
+				return point.connections.length < 2;
+			})
 		}
 	},
 	methods : {
@@ -85,16 +93,32 @@ const app = new Vue({
 			this.childPointWithId(point.id).showPoint();
 		},
 		connectPoints(pointA, pointB, id){
-			let pos1 = pointA.position
-			let pos2 = pointB.position
 
-			if (pointA.connections.find(function(connection){
-				return connection.points.find(function(point){
-					return point.id == pointB.id;
-				})
+			if (this.connections.find(function(con){
+				return con.id == id
 			})){
 				return;
 			}
+
+			let pointAConflict = pointA.connections.find(function(con){
+				return con.points.find(function(point){
+					return pointB.id == point.id
+				})
+			})
+
+			let pointBConflict = pointB.connections.find(function(con){
+				return con.points.find(function(point){
+					return pointA.id == point.id
+				})
+			})
+
+			if (pointAConflict || pointBConflict){
+				console.log('ha!');
+				return;
+			}
+
+			let pos1 = pointA.position
+			let pos2 = pointB.position
 
 			let connection = {
 				id : id,
