@@ -114,6 +114,7 @@ export default {
 
 	.point.selected .point-label {
 		background: rgba(150,179,40, 1);
+		color:white;
 	}
 
 	.point.highlighted .point-label {

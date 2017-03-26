@@ -115,7 +115,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			var strokeColor = 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
 
-			var strokeWidth = Math.floor((10 - this.connection.distance) / 2);
+			var strokeWidth = 4;
 
 			var duration = Math.floor(Math.random() * 10 + 1) * 100 + 'ms';
 
@@ -244,7 +244,7 @@ exports.push([module.i, "\n@-webkit-keyframes offset{\nto {\n\t\topacity: 1;\n}\
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")();
-exports.push([module.i, "\n.point {\n\tposition: absolute;\n\theight: 10px;\n\twidth: 10px;\n\tborder-radius: 100%;\n\tbackground: black;\n\tcursor: pointer;\n\tz-index: 20;\n}\n.point-label {\n\tfont-size: 150%;\n\tbackground: rgba(255,255,255,0.9);\n\tposition: relative;\n\tpadding: 0.05em;\n\tleft: -18px;\n\ttop: 10px;\n}\n.point.selected, .point.highlighted {\n\tz-index: 100;\n}\n.point.selected .point-label {\n\tbackground: rgba(150,179,40, 1);\n}\n.point.highlighted .point-label {\n\tbackground: rgba(255,0,0, 0.5);\n\tcolor: white;\n}\n.point.selected .point-label, .point.highlighted .point-label {\n\tpadding: 0.2em;\n\tz-index: 100;\n}\n\n", ""]);
+exports.push([module.i, "\n.point {\n\tposition: absolute;\n\theight: 10px;\n\twidth: 10px;\n\tborder-radius: 100%;\n\tbackground: black;\n\tcursor: pointer;\n\tz-index: 20;\n}\n.point-label {\n\tfont-size: 150%;\n\tbackground: rgba(255,255,255,0.9);\n\tposition: relative;\n\tpadding: 0.05em;\n\tleft: -18px;\n\ttop: 10px;\n}\n.point.selected, .point.highlighted {\n\tz-index: 100;\n}\n.point.selected .point-label {\n\tbackground: rgba(150,179,40, 1);\n\tcolor:white;\n}\n.point.highlighted .point-label {\n\tbackground: rgba(255,0,0, 0.5);\n\tcolor: white;\n}\n.point.selected .point-label, .point.highlighted .point-label {\n\tpadding: 0.2em;\n\tz-index: 100;\n}\n\n", ""]);
 
 /***/ }),
 
@@ -10283,7 +10283,7 @@ var app = new Vue({
 		notTraveled: [],
 		connections: [],
 		displayPoint: false,
-		pointsToCreate: 10
+		pointsToCreate: 150
 	},
 	mounted: function mounted() {
 		var _this = this;
@@ -10312,12 +10312,15 @@ var app = new Vue({
 		var current = 0;
 
 		var _loop = function _loop() {
-			var pointA = _this.points[current];
+
+			var points = _this.shuffle(_this.pointsWithoutEnoughConnections);
+
+			var pointA = points[0];
 
 			var connectionCount = Math.floor(Math.random() * (_this.points.length - current));
 
 			if (connectionCount > 5) connectionCount = 5;
-			if (connectionCount == 1) connectionCount = 2;
+			if (connectionCount == 2) connectionCount = 3;
 
 			pointsToConnect = _this.shuffle(_this.points).slice(0, connectionCount);
 
@@ -10328,7 +10331,7 @@ var app = new Vue({
 			current++;
 		};
 
-		while (current < this.points.length) {
+		while (this.pointsWithoutEnoughConnections.length) {
 			var pointsToConnect;
 
 			_loop();
@@ -10343,6 +10346,11 @@ var app = new Vue({
 		},
 		endingPoint: function endingPoint() {
 			return this.points[this.points.length - 1];
+		},
+		pointsWithoutEnoughConnections: function pointsWithoutEnoughConnections() {
+			return this.points.filter(function (point) {
+				return point.connections.length < 2;
+			});
 		}
 	},
 	methods: {
@@ -10361,16 +10369,32 @@ var app = new Vue({
 			this.childPointWithId(point.id).showPoint();
 		},
 		connectPoints: function connectPoints(pointA, pointB, id) {
-			var pos1 = pointA.position;
-			var pos2 = pointB.position;
 
-			if (pointA.connections.find(function (connection) {
-				return connection.points.find(function (point) {
-					return point.id == pointB.id;
-				});
+			if (this.connections.find(function (con) {
+				return con.id == id;
 			})) {
 				return;
 			}
+
+			var pointAConflict = pointA.connections.find(function (con) {
+				return con.points.find(function (point) {
+					return pointB.id == point.id;
+				});
+			});
+
+			var pointBConflict = pointB.connections.find(function (con) {
+				return con.points.find(function (point) {
+					return pointA.id == point.id;
+				});
+			});
+
+			if (pointAConflict || pointBConflict) {
+				console.log('ha!');
+				return;
+			}
+
+			var pos1 = pointA.position;
+			var pos2 = pointB.position;
 
 			var connection = {
 				id: id,
