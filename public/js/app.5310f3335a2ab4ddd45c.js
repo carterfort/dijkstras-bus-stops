@@ -102,22 +102,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var blue = Math.floor(Math.random() * 255);
 			var green = Math.floor(Math.random() * 255);
 			var alpha = (10 - this.connection.distance) / 10;
-			var animationDelay = this.connection.id * 60 + "ms";
+			var animationDelay = this.connection.id * 20 + "ms";
 			var depth = 10;
+			var strokeColor = 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
+			var strokeWidth = Math.floor((10 - this.connection.distance) / 3);
+			var duration = Math.floor(Math.random() * 10 + 1) * 50 + 'ms';
 
 			if (this.highlighted) {
 				depth = 200;
-				red = 255;
-				green = 255;
-				blue = 64;
+				red = 0;
+				green = 0;
+				blue = 0;
 				alpha = 1;
+				strokeWidth = 8;
 			}
-
-			var strokeColor = 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
-
-			var strokeWidth = 4;
-
-			var duration = Math.floor(Math.random() * 10 + 1) * 100 + 'ms';
 
 			return {
 				stroke: strokeColor,
