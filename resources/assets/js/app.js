@@ -15,7 +15,7 @@ const app = new Vue({
 		notTraveled : [],
 		connections : [],
 		displayPoint : false,
-		pointsToCreate : 150
+		pointsToCreate : 20
 	},
 	mounted(){
 
@@ -43,26 +43,29 @@ const app = new Vue({
 
 		var current = 0;
 
-		while (  this.pointsWithoutEnoughConnections.length ){
+		while (  this.pointsWithoutEnoughConnections.length >  0 ){
 			
 			let points = this.shuffle(this.pointsWithoutEnoughConnections);
 
 			let pointA = points[0]
 
-			let connectionCount = Math.floor(Math.random() * (this.points.length - current))
+			let connectionCount = Math.floor(Math.random() * 10) + 10;
 
-			if (connectionCount > 5) connectionCount = 5;
-			if (connectionCount == 2) connectionCount = 3;
+			if (connectionCount == 2){
+				connectionCount = 3;
+			} 
 
 			var pointsToConnect = this.shuffle(this.points).slice(0, connectionCount);
-			pointsToConnect.forEach(function(pointB){
-				this.connectPoints(pointA, pointB, current);
+
+			pointsToConnect.forEach(function(pointB, index){
+				this.connectPoints(pointA, pointB, current * (index + 1));
 			}.bind(this))
 
 			current++;
 		}
 
 		this.traveled = this.points[0];
+
 	},
 	computed : {
 		startingPoint(){
