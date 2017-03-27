@@ -26,11 +26,11 @@ export default {
 			var blue = Math.floor(Math.random() * 255);
 			var green = Math.floor(Math.random() * 255);
 			var alpha = ((10 - this.connection.distance) / 10);
-			var animationDelay = (this.connection.id * 20)+"ms";
+			var animationDelay = (this.connection.id * 5)+"ms";
 			var depth = 10
 			var strokeColor = 'rgba('+red+', '+green+', '+blue+', '+alpha+')';
 			var strokeWidth = Math.floor((10 - this.connection.distance) / 3)
-			var duration = Math.floor((Math.random() * 10) + 1) * 50+'ms';
+			var duration = Math.floor((Math.random() * 10) + 1) * 5+'ms';
 
 			if (this.highlighted) {
 				depth = 200;
