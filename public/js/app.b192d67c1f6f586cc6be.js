@@ -102,11 +102,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var blue = Math.floor(Math.random() * 255);
 			var green = Math.floor(Math.random() * 255);
 			var alpha = (10 - this.connection.distance) / 10;
-			var animationDelay = this.connection.id * 20 + "ms";
+			var animationDelay = this.connection.id * 5 + "ms";
 			var depth = 10;
 			var strokeColor = 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
 			var strokeWidth = Math.floor((10 - this.connection.distance) / 3);
-			var duration = Math.floor(Math.random() * 10 + 1) * 50 + 'ms';
+			var duration = Math.floor(Math.random() * 10 + 1) * 5 + 'ms';
 
 			if (this.highlighted) {
 				depth = 200;
@@ -10281,7 +10281,7 @@ var app = new Vue({
 		notTraveled: [],
 		connections: [],
 		displayPoint: false,
-		pointsToCreate: 150
+		pointsToCreate: 20
 	},
 	mounted: function mounted() {
 		var _this = this;
@@ -10315,21 +10315,23 @@ var app = new Vue({
 
 			var pointA = points[0];
 
-			var connectionCount = Math.floor(Math.random() * (_this.points.length - current));
+			var connectionCount = Math.floor(Math.random() * 10) + 10;
 
-			if (connectionCount > 5) connectionCount = 5;
-			if (connectionCount == 2) connectionCount = 3;
+			if (connectionCount == 2) {
+				connectionCount = 3;
+			}
 
 			pointsToConnect = _this.shuffle(_this.points).slice(0, connectionCount);
 
-			pointsToConnect.forEach(function (pointB) {
-				this.connectPoints(pointA, pointB, current);
+
+			pointsToConnect.forEach(function (pointB, index) {
+				this.connectPoints(pointA, pointB, current * (index + 1));
 			}.bind(_this));
 
 			current++;
 		};
 
-		while (this.pointsWithoutEnoughConnections.length) {
+		while (this.pointsWithoutEnoughConnections.length > 0) {
 			var pointsToConnect;
 
 			_loop();
